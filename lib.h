@@ -22,6 +22,8 @@ double rng_uniform01(void);
 // Libera la memoria degli stati RNG
 void rng_threads_free(void);
 
+
+//rappresenta un elemento della matrice sparsa, ovvero una riga 
 typedef struct Sparse_element{
     int dimension;
     int * indexes;
