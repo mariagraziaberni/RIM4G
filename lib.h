@@ -12,7 +12,7 @@
 #define lib_h 
 
 
-
+int rng_int(int upper_bound);
 void rng_threads_init(int nthreads, long base_seed);
 
 // Estrae un uniforme in [0,1) dallo stato del **thread corrente**
@@ -22,8 +22,6 @@ double rng_uniform01(void);
 // Libera la memoria degli stati RNG
 void rng_threads_free(void);
 
-
-//rappresenta un elemento della matrice sparsa, ovvero una riga 
 typedef struct Sparse_element{
     int dimension;
     int * indexes;

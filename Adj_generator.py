@@ -28,17 +28,25 @@ def get_dataset(root, name):
         
     else:
         raise ValueError(f'Unknown dataset `{name}`')
+        
+        
+        
+        
+parser = argparse.ArgumentParser()
+parser.add_argument('--dataset',default='cora')
+
+args = parser.parse_args()
+
     
 
-name = 'arxiv'
+name = str(args.dataset)
 undirected = False
-
-dataset = get_dataset(root='D:\Python\Dataset', name = name)
 
 
 device = torch.device('cpu')
 data = dataset[0].to(device)
 
+dataset = get_dataset(root='./Dataset___',name=name)
 
 #adj = data.edge_index if not undirected else to_undirected(data.edge_index)
 

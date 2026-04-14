@@ -53,6 +53,18 @@ void rng_threads_free(void) {
 //////////////da qui è come prima //////////////
 
 
+
+
+// Restituisce un intero in [0, upper_bound)
+int rng_int(int upper_bound) {
+    double u = 0.0;
+    drand48_r(&g_rng[0], &u);
+    return (int)(u * upper_bound);
+}
+
+
+
+
 //questo era solo una prova, dopo posso toglierlo 
 float** generate_dense_matrix(int row,int col){ 
     float ** M = malloc(row*sizeof(float*)); 
@@ -74,7 +86,6 @@ float** generate_dense_matrix(int row,int col){
 
 void init_generator(int random_state_iteration,int nthreads){
 
- //Il seguente codice riguarda l'inizializzazione per la generazione delle matrici 
  unsigned long long init[4]={0x12345ULL, 0x23456ULL, 0x34567ULL, 0x45678ULL}, length=4;
  
  init_by_array64(init, length);  //inizializza il generatore 
@@ -83,17 +94,11 @@ void init_generator(int random_state_iteration,int nthreads){
  if (random_state_iteration != -1) srand(random_state_iteration);   //per le altre iterazioni 
     else srand(time(NULL));
     
- //////////////----------------------------------------////////
- 
- //parte inizializzazione per il noise-termico 
-    
- long seed = (long)time(NULL);        
+ long seed =(long)random_state_iteration;     //  14.0;  // (long)time(NULL);        // o un seed fisso per riproducibilità
  rng_threads_init(nthreads, seed);
  } 
 
 
-
-//genera tipo matrice interazione binary sparse 
 float** binary_sparse(int row_dimension, int column_dimension, int n_connections, int random_state)
 { 
     float **M = malloc(row_dimension*sizeof(float*)); 
@@ -289,8 +294,6 @@ float** uniform_antisymmetric_sparse(int row_dimension, int n_connections, int r
    return M; 
    
 } 
-
-//converte le matrici da dense a sparse 
 
 Sparse_matrix * Dense_to_Sparse( float ** M, int row_dimension, int column_dimension )
 {
@@ -508,7 +511,6 @@ void print_int_matrix(int **M, int row, int col) {
     }
 }
 
-//crea e copia una matrice float leggendola da numpy 
 float** alloc_and_copy_float_matrix_from_np(float* np_array, int rows, int cols){ 
     float** M = malloc(rows*sizeof(float*)); 
     
@@ -682,8 +684,6 @@ double total_energy(Sparse_matrix * A, Sparse_matrix * W, int ** embedding, floa
 //{ 
 
 
-
-//esegue un update parallelo, quindi quello non fisico 
 double parallel_update(Sparse_matrix * A, Sparse_matrix * W, int ** embedding, float bias_coupling, float ** bias, double initial_energy, int steps, int nthreads)
 { 
 
@@ -768,7 +768,7 @@ double parallel_update(Sparse_matrix * A, Sparse_matrix * W, int ** embedding, f
     
   
   
-//
+
 double simulate(Sparse_matrix * A, Sparse_matrix * W, int ** embedding, float bias_coupling, float ** bias, double initial_energy, int steps, int nthreads, double T)
 { 
 
@@ -783,7 +783,8 @@ double simulate(Sparse_matrix * A, Sparse_matrix * W, int ** embedding, float bi
   // printf("Numero threads = %d, ma ne ho mandati %d\n",nn_t,nthreads);
   for (int j=0; j<steps; j++)
   { 
-   int n=rand()%(A->dimension);  //scelta casuale del vertice 
+    int n = rng_int(A->dimension);
+  // int n=rand()%(A->dimension);  //scelta casuale del vertice 
   
    
    
@@ -860,8 +861,8 @@ double simulate(Sparse_matrix * A, Sparse_matrix * W, int ** embedding, float bi
       total_events +=loc_events[qq]; 
       }
       
-      //printf("%d\n",total_events);   
-      //fflush(stdout);
+    //  printf("%d\n",total_events); 
+    //  fflush(stdout);
       
       
       return total_energy; 
@@ -874,8 +875,6 @@ double simulate(Sparse_matrix * A, Sparse_matrix * W, int ** embedding, float bi
    } 
    
 
-
-//simulazione non parallela , quando nthreads = 1 
 double simulate_no_parallel(Sparse_matrix * A, Sparse_matrix * W, int ** embedding, float bias_coupling, float ** bias, double initial_energy, int steps)
 { 
 
@@ -924,8 +923,6 @@ for (int i = 0; i < size; i++) {
 }
   
     
-    
-// tiene conto dei secondi vicini , codice non parallelo 
  
 double simulate_2hops_no_parallel(Sparse_matrix * A, Sparse_matrix * W, int ** embedding, float bias_coupling, float ** bias, double initial_energy, int steps)  //,int max_neigh)
 { 
@@ -1002,7 +999,7 @@ double simulate_2hops_no_parallel(Sparse_matrix * A, Sparse_matrix * W, int ** e
        
      
      
- //tiene conto dei secondi vicini, codice parallelo 
+   
 
  double simulate_2hops(Sparse_matrix * A, Sparse_matrix * W, int ** embedding, float bias_coupling, float ** bias, double initial_energy, int steps,int nthreads)  //,int max_neigh)
 { 

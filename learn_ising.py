@@ -5,12 +5,7 @@ import sys
 import os 
 import inspect
 
-#def gen_matrix(row,col): 
-#    m = lib_ising.generate_dense_matrix(row,col) 
-#    lib_ising.print_matrix(m,row,col)
 
-
-#initializer_ = ["binary_symmetric_traceless_sparse", "binary_symmetric_sparse","binary_sparse","uniform_symmetric_traceless_sparse", "uniform_symmetric_sparse","uniform_sparse"]
     
 class SparseElement(ctypes.Structure): 
     _fields_ = [ 
@@ -69,7 +64,7 @@ class Ising(): #per ora lascio perdere iterations e termalization
         self.nthreads = nthreads
         self.initialize_generator(random_state_iteration) 
         
-        self.data_=data_ #questo è semplicemente il nome del dataset
+        self.data_=data_ 
         self.data = data
         
         self.root = root_
@@ -90,12 +85,7 @@ class Ising(): #per ora lascio perdere iterations e termalization
         
         self.bias_coupling = bias_coupling 
         
-        self.numpy_bias = None
-        
-        #self.initializer = initializer 
-        
-         
-        #print("Numero threads = ",self.nthreads) 
+        self.numpy_bias = None 
         
         self.matrix_w = None   #reservoir denso 
         
@@ -104,13 +94,9 @@ class Ising(): #per ora lascio perdere iterations e termalization
         self.embedding = None 
         
         self.initializer = get_initializer_w_matrix(lib_ising) 
-        #matrix_name = str(Adj)+
-        self.A = lib_ising.read_sparse(adj_matrix_name,1) #mettere il nome della matrice tra gli argomenti 
-        #dopo generare la matrice da pthon, per ora no altrimenti non vedo i mem leaks 
-        
        
-        
-        #self.bias = lib_ising.read_matrix(b"input_bias.txt",self.vertices,self.dimension); 
+        self.A = lib_ising.read_sparse(adj_matrix_name,1) #mettere il nome della matrice tra gli argomenti 
+     
         self.bias = None 
         
         
@@ -153,11 +139,7 @@ class Ising(): #per ora lascio perdere iterations e termalization
             #self.sparse_matrix_w= self.generate_sparse_matrix(self.matrix_w,self.dimension,self.dimension) 
             #self.sparse_matrix_w= self.generate_sparse_matrix(self.matrix_w,self.dimension,self.dimension)
              
-    def prova_bias(self,n,m): 
-        print("DEntro numpy bias = ",self.numpy_bias[n][m])
-        dato = lib_ising.prova_bias(self.bias,n,m)
-        print(dato) 
-        return dato 
+   
                
     def initialize_embedding(self): 
        
@@ -190,7 +172,7 @@ class Ising(): #per ora lascio perdere iterations e termalization
             
     
     def generate_w_matrix(self,int_type): 
-        #mettere la condizione che se l intero non è compreso nel range da errore 
+        
         init_ = self.initializer[int_type] 
         n_params = len(init_.argtypes)
         if n_params==4: 
@@ -269,27 +251,14 @@ class Ising(): #per ora lascio perdere iterations e termalization
     def copy_matrix_w_to_c(self): 
         result = np.load(os.path.join(self.root,"numpy_w.npy"))
         flat_ptr = result.ctypes.data_as(ctypes.POINTER(ctypes.c_float)) 
-        return lib_ising.alloc_and_copy_float_matrix_from_np(flat_ptr,self.dimension,self.dimension) 
-    
-    
-        
-       # if isinstance(ptr_, ctypes.POINTER(ctypes.POINTER(ctypes.c_int))):
-       #     print("È un LP_L_P_c_int")
-       # elif isinstance(ptr_, ctypes.POINTER(ctypes.POINTER(ctypes.c_float))):
-       #     print("È un LP_LP_c_float")
-       # else:
-       #     print("Tipo non riconosciuto:", type(ptr))
-        
-        
-    
-        #mettere quello del flat_ptr etc etc 
+        return lib_ising.alloc_and_copy_float_matrix_from_np(flat_ptr,self.dimension,self.dimension)  
         return 
     def save_to_numpy(self,save_file=False): 
         if self.matrix_w is not None:
             numpy_w = get_float_matrix_from_c(self.matrix_w, self.dimension, self.dimension)
         if self.embedding is not None: 
             numpy_emb = get_int_matrix_from_c(self.embedding,self.vertices, self.dimension)
-        #salvare su file 
+        
         if save_file: 
             if not os.path.exists(self.root):
                 os.makedirs(self.root)
@@ -314,15 +283,6 @@ class Ising(): #per ora lascio perdere iterations e termalization
         
     
     
- #float** uniform_antisymmetric_sparse(int, int, int); 
-#loat** binary_antisymmetric_sparse(int row_dimension, int n_connections, int random_state) 
-#float** binary_antisymmetric_sparse(int row_dimension, int n_connections, int random_state) 
-# float** uniform_symmetric_traceless_sparse(int, int, int);         
-#uniform_symmetric_sparse
-#binary_symmetric_sparse
-#float** binary_sparse(int ,int , int , int )
-
-#float** read_matrix(const char* , int, int);
 
 def setup_lib(lib_path): 
     lib = ctypes.cdll.LoadLibrary(lib_path) 
