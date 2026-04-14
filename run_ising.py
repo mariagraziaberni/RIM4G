@@ -20,7 +20,7 @@ def _patched_load(*args, **kwargs):
 # Rimpiazzo torch.load globalmente
 torch.load = _patched_load
 from torch.nn.functional import one_hot
-from torch_geometric.datasets import WikipediaNetwork, WebKB, Actor, Planetoid,Amazon,Coauthor,WikiCS
+from torch_geometric.datasets import WikipediaNetwork, WebKB, Actor, Planetoid
 from graphesn import StaticGraphReservoir, initializer, Readout
 from graphesn.util import graph_spectral_norm
 import warnings 
@@ -55,16 +55,8 @@ def get_dataset(root, name):
         return WebKB(root=root, name=name)
     elif name in ['cora', 'citeseer', 'pubmed']:
         return Planetoid(root=root, name=name, split='geom-gcn')
-    elif name in ['CS','Physics']: 
-        return Coauthor(root=root,name=name)
-    elif name in ["Photo","Computers"]: 
-        return Amazon(root=root, name=name)
-    elif name=='WikiCS': 
-        return WikiCS(root=root) 
     elif name == 'actor':
         return Actor(root=root)
-    elif name == 'arxiv': 
-        return PygNodePropPredDataset(name="ogbn-arxiv", transform=ToUndirected())
     else:
         raise ValueError(f'Unknown dataset `{name}`')
         
