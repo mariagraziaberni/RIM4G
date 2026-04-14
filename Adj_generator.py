@@ -40,15 +40,13 @@ args = parser.parse_args()
     
 
 name = str(args.dataset)
-undirected = False
 
 
-device = torch.device('cpu')
-data = dataset[0].to(device)
 
 dataset = get_dataset(root='./Dataset___',name=name)
 
-#adj = data.edge_index if not undirected else to_undirected(data.edge_index)
+
+data = dataset[0]
 
 adj = to_undirected(data.edge_index) 
 
