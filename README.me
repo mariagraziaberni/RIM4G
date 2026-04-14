@@ -2,3 +2,26 @@
 
 gcc -fPIC -shared -o libc.so libc.c ./mt19937-64/mt19937-64.c -lm -fopenmp
 
+#esecuzione : 
+
+nohup python3 run_ising_.py --dataset=cora --steps=50000 --dimension=4096 --w_type=3 --w_connections=128 --n_threads=16 --bias=19.5 --iter=10 --initial_iter=700 --save_dir=risultato --temperature=0 --random_state_w=5 --random_state_iteration  & > out1.log &
+
+nohup python3 run_ising_.py --dataset=citeseer --steps=50000 --dimension=4096 --w_type=3 --w_connections=128 --n_threads=16 --bias=19.5 --iter=10 --initial_iter=700 --save_dir=risultato --temperature=0 --random_state_w=5 --random_state_iteration  & > out1.log &
+
+
+steps = numero totale di sweeps , puoi metterlo anche enorme a temperatura zero in quanto quando l energia si stabilizza il programma dsi interrompe da solo 
+--dimension = dimensione dell'embedding e della matrice reservoir W 
+--w_type = tipo di matrice reservoir, 3 per binary symmetric sparse e 5 per uniform symmetric sparse, per ising solo matrici simmetriche
+
+--w_connection = numero totale di connessioni della matrice reservoir W 
+--n_thread  = numero thread, parallelizzazione è sul reservoir W, quindi sarebbe meglio che n_thread divida w_connections 
+--bias = coefficente di accoppiamento con il campo magnetico 
+
+--initial_iter = numero di sweep totali che fa all'inizio senza calcolare metriche 
+--iter = numero di sweep dopo gli iniziali, ogni --iter ietrazioni calcola le metriche, anche prima di convergere 
+
+--random_state_w = seed per la creazione delle matrici e degli embedding iniziali, usare intero diverso da -1, se è -1 non è riproducibile 
+
+--random_state_iteration = seed per le interazioni e temperature, -1 non riproducibile 
+
+
